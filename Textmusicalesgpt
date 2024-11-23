@@ -1,0 +1,107 @@
+- 👋 Hi, I’m @Rachetangle
+- 👀 I’m interested in ...
+- 🌱 I’m currently learning ...
+- 💞️ I’m looking to collaborate on ...
+- 📫 How to reach me ...
+- 😄 Pronouns: ...
+- ⚡ Fun fact: ...
+
+<!---
+Rachetangle/Rachetangle is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+You can click the Preview link to take a look at your changes.
+--->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Texto a Música</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 50px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 20px;
+    }
+    .output {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>De Voz a Música</h1>
+  <p>Presiona el botón y habla para convertir tu voz en texto y música.</p>
+  <button id="record-btn">🎤 Grabar Voz</button>
+  <div class="output">
+    <p><strong>Texto Detectado:</strong> <span id="detected-text">[Nada aún]</span></p>
+    <p><strong>Generando Música...</strong></p>
+    <audio id="audio-player" controls></audio>
+  </div>
+
+  <script>
+    // Verificar si el navegador soporta reconocimiento de voz
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Tu navegador no soporta reconocimiento de voz.");
+    } else {
+      const recognition = new SpeechRecognition();
+      recognition.lang = "es-ES"; // Idioma español
+      const recordBtn = document.getElementById("record-btn");
+      const detectedText = document.getElementById("detected-text");
+      const audioPlayer = document.getElementById("audio-player");
+
+      // Capturar voz al hacer clic en el botón
+      recordBtn.addEventListener("click", () => {
+        detectedText.textContent = "Escuchando...";
+        recognition.start();
+      });
+
+      // Procesar texto detectado
+      recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        detectedText.textContent = text;
+
+        // Generar música simulada
+        generateMusic(text);
+      };
+
+      recognition.onerror = (event) => {
+        detectedText.textContent = "Error: " + event.error;
+      };
+    }
+
+    // Generar música básica basada en texto
+    function generateMusic(text) {
+      const context = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = context.createOscillator();
+      const gainNode = context.createGain();
+
+      // Conectar nodos
+      oscillator.connect(gainNode);
+      gainNode.connect(context.destination);
+
+      // Ajustar frecuencia en función del texto
+      let freq = 440; // Frecuencia base
+      if (text.length > 0) {
+        freq += text.length * 10; // Incremento según longitud del texto
+      }
+      oscillator.frequency.setValueAtTime(freq, context.currentTime);
+
+      // Configurar tipo de onda
+      oscillator.type = "sine";
+
+      // Reproducir tono
+      oscillator.start();
+      setTimeout(() => oscillator.stop(), 1000); // Duración de 1 segundo
+
+      // Simular audio generado
+      audioPlayer.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YYoAAACAgICAgICAgICAgICAgICAgICAgICAg"; // Placeholder
+    }
+  </script>
+</body>
+</html>
